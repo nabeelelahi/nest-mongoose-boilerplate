@@ -5,6 +5,7 @@ import {
     IsString,
 } from 'class-validator';
 import { ApiProperty } from "@nestjs/swagger";
+import { verificationConstant } from 'config/constants';
 
 enum device {
     'android',
@@ -12,7 +13,7 @@ enum device {
     'web'
 }
 
-export class LoginDTO {
+class LoginMobileDTO {
     @ApiProperty()
     @IsNotEmpty()
     mobile_no: string
@@ -39,3 +40,36 @@ export class LoginDTO {
 
     access_token: string
 }
+
+export class LoginEmailDTO {
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsEmail()
+    mobile_no: string
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
+    password: string
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
+    device_token: string
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsEnum(device)
+    device: device
+
+    current_location: {
+        type: string
+        current_location: number[]
+    }
+
+    access_token: string
+}
+
+const loginDTO = verificationConstant.mode == 'email' ? LoginEmailDTO : LoginMobileDTO
+
+export class LoginDTO extends loginDTO { };

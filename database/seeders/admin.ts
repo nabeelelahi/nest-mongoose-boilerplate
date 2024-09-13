@@ -17,7 +17,7 @@ export default async (mongoose:any) => {
             password: await bcrypt.hash('Admin@123$', +bycryptConstants.salt),
             username: 'super-admin',
             email_verified: true,
-            phone_verified: true,
+            mobile_no_verified: true,
             created_at: new Date(),
         }
     ]

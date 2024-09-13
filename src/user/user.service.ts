@@ -44,7 +44,7 @@ export class UserService extends BaseService {
         "online_status",
         "payment_active",
         "email_verified",
-        "phone_verified",
+        "mobile_no_verified",
         "slug",
         "created_at"
     ]
@@ -92,11 +92,11 @@ export class UserService extends BaseService {
         if (!verifyCode) return false;
         let reset_password_token = randomUUID();
         console.log('reset_password_token...', reset_password_token)
-        let payload: { verification_code: string, email_verified?: boolean, phone_verified?: boolean, reset_password_token: string } = {
+        let payload: { verification_code: string, email_verified?: boolean, mobile_no_verified?: boolean, reset_password_token: string } = {
             verification_code: null,
             reset_password_token,
+            [`${verificationConstant.mode}_verified`]: true
         };
-        verificationConstant.mode == 'email' ? payload['email_verified'] = true : payload['phone_verified'] = true;
         await this._model.findOneAndUpdate({ [verificationConstant.mode]: _body[verificationConstant.mode].toLocaleLowerCase() }, payload)
         return reset_password_token;
     }
@@ -128,10 +128,10 @@ export class UserService extends BaseService {
     }
 
     verifyStatuses(user: UserDTO): { success: boolean, message: string } {
-        // if (!user.email_verified)
-        //     return { success: false, message: 'Email not verified' };
-        // if (!user.status)
-        //     return { success: false, message: 'Your account is deactivated' };
+        if (!user.email_verified)
+            return { success: false, message: 'Email not verified' };
+        if (!user.status)
+            return { success: false, message: 'Your account is deactivated' };
         return { success: true, message: 'Verified' };
     }
 

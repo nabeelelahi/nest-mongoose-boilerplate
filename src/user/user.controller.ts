@@ -75,12 +75,6 @@ export class UserController extends BaseController {
         let phoneExists = await this._service.verifyUser({ mobile_no: this._body['mobile_no'] });
         if (phoneExists)
             return this._sendException(400, 'Validation Error', ['Mobile no. already exists']);
-        if (this._request.file) {
-
-            // this._body['image'] = this._request.file
-            // console.log('this._request.file...', stream)
-        }
-        // return this._sendException(400, 'Validation Error', ['Mobile no. already exists']);
     };
 
     override afterCreate = async (record: UserDTO) => {

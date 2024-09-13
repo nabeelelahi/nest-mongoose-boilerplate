@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import { databaseConstants } from "../config/constants";
-// import 'dotenv/config'
 export const dbUrl = databaseConstants.url;
 
 

@@ -27,7 +27,7 @@ export const schema = new Schema({
     },
     password: {
         type: String,
-        // required: true
+        required: true
     },
     image_url: {
         type: String,
@@ -58,11 +58,11 @@ export const schema = new Schema({
     email_verified_at: {
         type: Date,
     },
-    phone_verified: {
+    mobile_no_verified: {
         type: Boolean,
         default: false
     },
-    phone_verified_at: {
+    mobile_no_verified_at: {
         type: Date,
     },
     verification_code: {

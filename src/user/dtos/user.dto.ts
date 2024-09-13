@@ -93,7 +93,7 @@ export class UserDTO extends baseInterface {
 
     email_verified?: boolean
 
-    phone_verified?: boolean
+    mobile_no_verified?: boolean
 
     @ApiProperty({
         type: 'string',
@@ -101,12 +101,5 @@ export class UserDTO extends baseInterface {
         required: false
     })
     image: Express.Multer.File
-
-    // @ApiProperty({
-    //     type: 'string',
-    //     format: 'binary',
-    //     required: false
-    // })
-    // salon_image: Express.Multer.File
 
 }
