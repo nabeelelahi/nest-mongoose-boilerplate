@@ -45,7 +45,7 @@ export class LoginEmailDTO {
     @ApiProperty()
     @IsNotEmpty()
     @IsEmail()
-    mobile_no: string
+    email: string
 
     @ApiProperty()
     @IsNotEmpty()

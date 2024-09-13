@@ -13,8 +13,8 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, { cors: true });
   // swagger set up
   const config = new DocumentBuilder()
-    .setTitle('Salon Go API')
-    .setDescription('This is the api documentation of Salon Go')
+    .setTitle('Nest JS API')
+    .setDescription('This is the api documentation of Nest JS')
     .addBearerAuth(
       {
         type: 'http',
