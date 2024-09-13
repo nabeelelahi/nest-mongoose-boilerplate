@@ -64,24 +64,12 @@ export class UserService extends BaseService {
         if (_request.file) {
             payload['image_url'] = await FileUpload.upload(_request.file as Express.Multer.File);
         }
-        payload['address'] = this.appendAddress(payload, _request['user'])
         if (payload['longitude'] && payload['latitude']) {
             payload['current_location'] = { type: 'Point', coordinates: [payload['longitude'], payload['latitude']] }
         }
         return payload;
     };
 
-    protected appendAddress(payload: any, user: UserDTO): { [key: string]: string } {
-        let addressFields = ['street', 'building', 'house', 'landmark'];
-        let address = {};
-        addressFields.forEach((i => {
-            if (Object.keys(payload).includes(i)) {
-                address[i] = payload[i]
-            }
-        }))
-        address = { ...user.address, ...address }
-        return address
-    }
 
     async verifyCredentails(_body: LoginDTO): Promise<any> {
         let user = await this.findOne({ mobile_no: _body['mobile_no'].toLocaleLowerCase(), deleted_at: null });
