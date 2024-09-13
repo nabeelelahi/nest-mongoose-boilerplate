@@ -29,11 +29,6 @@ export const schema = new Schema({
         type: String,
         // required: true
     },
-    completion_step: {
-        type: Number,
-        default: 1
-        // required: true
-    },
     image_url: {
         type: String,
         default: 'https://res.cloudinary.com/dxyb4xgcs/image/upload/v1723172250/user-placeholder_hhrfnj.png'
@@ -96,41 +91,6 @@ export const schema = new Schema({
             default: [0, 0],
         }
     },
-    address: {
-        house: {
-            type: String
-        },
-        street: {
-            type: String
-        },
-        building: {
-            type: String
-        },
-        landmark: {
-            type: String
-        },
-        latitude: {
-            type: Number
-        },
-        longitude: {
-            type: Number
-        }
-    },
-    salon_name:{
-        type: String
-    },
-    salon_email:{
-        type: String
-    },
-    salon_phone:{
-        type: String
-    },
-    description:{
-        type: String
-    },
-    offered_at:{
-        type: Array<string>
-    },
     country: {
         type: String
     },
@@ -148,7 +108,7 @@ schema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
     //hash password with bcryptjs
     this.password = await bcrypt.hash(this.password, +bycryptConstants.salt);
-  });
+});
 
 export const User = mongoose.model(name, schema);
 export default MongooseModule.forFeature([{ name, schema }])

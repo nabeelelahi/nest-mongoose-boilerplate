@@ -12,6 +12,7 @@ import { FileUpload } from 'services/FileUpload';
 import { randomUUID } from 'crypto'
 import { UserDTO } from './dtos/user.dto';
 import { LoginDTO } from './dtos/login.dto';
+import { VerifyCodeDTO } from './dtos/verify-code.dto';
 
 
 @Injectable()
@@ -37,17 +38,9 @@ export class UserService extends BaseService {
         "country",
         "city",
         "state",
-        "description",
-        "offered_at",
         "current_location",
         "latitude",
         "longitude",
-        "category",
-        "salon_name",
-        "salon_email",
-        "salon_phone",
-        "completion_step",
-        "sub_category",
         "online_status",
         "payment_active",
         "email_verified",
@@ -98,8 +91,8 @@ export class UserService extends BaseService {
         return user;
     }
 
-    async verifyCode(_body: { email: string, code: string }): Promise<boolean | string> {
-        let user = await this.findOne({ email: _body['email'].toLocaleLowerCase() });
+    async verifyCode(_body: VerifyCodeDTO): Promise<boolean | string> {
+        let user = await this.findOne({ [verificationConstant.mode]: _body[verificationConstant.mode].toLocaleLowerCase() });
         if (!user) return false;
         let verifyCode: boolean
         try {
@@ -116,22 +109,22 @@ export class UserService extends BaseService {
             reset_password_token,
         };
         verificationConstant.mode == 'email' ? payload['email_verified'] = true : payload['phone_verified'] = true;
-        await this._model.findOneAndUpdate({ email: _body['email'].toLocaleLowerCase() }, payload)
+        await this._model.findOneAndUpdate({ [verificationConstant.mode]: _body[verificationConstant.mode].toLocaleLowerCase() }, payload)
         return reset_password_token;
     }
 
     async resetVerificationCode(_body: { email: string }): Promise<boolean> {
         let verification_code = '0000'
         verification_code = await bcrypt.hash(verification_code, +bycryptConstants.salt);
-        await this._model.findOneAndUpdate({ email: _body['email'].toLocaleLowerCase() }, { verification_code })
+        await this._model.findOneAndUpdate({ [verificationConstant.mode]: _body[verificationConstant.mode].toLocaleLowerCase() }, { verification_code })
         return true
     }
 
     async setPassword(_request: Request, _body: { password: string }): Promise<boolean> {
         let password = await bcrypt.hash(_body['password'], +bycryptConstants.salt);
-        let user = await this.findOne({ email: _request['user']['email'].toLocaleLowerCase() });
+        let user = await this.findOne({ [verificationConstant.mode]: _request['user'][verificationConstant.mode].toLocaleLowerCase() });
         if (!user) return false
-        await this._model.findOneAndUpdate({ email: user['email'].toLocaleLowerCase() }, { password })
+        await this._model.findOneAndUpdate({ [verificationConstant.mode]: user[verificationConstant.mode].toLocaleLowerCase() }, { password })
         return true
     }
 
@@ -142,7 +135,7 @@ export class UserService extends BaseService {
         verifyPassword = bcrypt.compareSync(_body['newPassword'], user['password']);
         if (verifyPassword) return { success: false, message: 'New Password Cannot Be The Same As The Old Password' };
         let password = await bcrypt.hash(_body['newPassword'], +bycryptConstants.salt);
-        await this._model.findOneAndUpdate({ email: user['email'].toLocaleLowerCase() }, { password })
+        await this._model.findOneAndUpdate({ [verificationConstant.mode]: user[verificationConstant.mode].toLocaleLowerCase() }, { password })
         return { success: true, message: 'Reset Password Successfully' }
     }
 

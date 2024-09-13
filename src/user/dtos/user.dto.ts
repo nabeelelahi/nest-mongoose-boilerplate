@@ -60,6 +60,18 @@ export class UserDTO extends baseInterface {
 
     @ApiPropertyOptional()
     @IsOptional()
+    country?: string
+    
+    @ApiPropertyOptional()
+    @IsOptional()
+    city?: string
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    state?: string
+
+    @ApiPropertyOptional()
+    @IsOptional()
     @IsString()
     @Matches(
         /^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8,150}$/,
@@ -77,43 +89,9 @@ export class UserDTO extends baseInterface {
     @IsOptional()
     longitude?: number
 
-    @ApiPropertyOptional()
-    @IsOptional()
-    salon_name?: string
-
-    @ApiPropertyOptional()
-    @IsOptional()
-    salon_email?: string
-
-    @ApiPropertyOptional()
-    @IsOptional()
-    salon_phone?: string
-
-    @ApiPropertyOptional()
-    @IsOptional()
-    description?: string
-
-    @ApiPropertyOptional()
-    @IsOptional()
-    @IsArray()
-    offered_at?: string[]
-
     payment_active?: boolean
 
     email_verified?: boolean
-
-    address?: {
-        house?: string
-        street?: string
-        building?: string
-        landmark?: string
-        latitude?: number
-        longitude?: number
-    }
-
-    country?: boolean
-    city?: boolean
-    state?: boolean
 
     phone_verified?: boolean
 

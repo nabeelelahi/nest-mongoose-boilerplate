@@ -15,7 +15,7 @@ import {
 } from 'express';
 import { UserService } from './user.service';
 import { BaseController } from 'src/base/base.controller';
-import { storageConstants } from 'config/constants';
+import { storageConstants, verificationConstant } from 'config/constants';
 import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { UserDTO } from './dtos/user.dto';
 import { UpdateUserDTO } from './dtos/update-user.dto';
@@ -63,7 +63,7 @@ export class UserController extends BaseController {
     }
 
     override beforeCreate = async () => {
-        let emailExists = await this._service.verifyUser({ email: this._body['email'].toLocaleLowerCase() });
+        let emailExists = await this._service.verifyUser({ [verificationConstant.mode]: this._body[verificationConstant.mode].toLocaleLowerCase() });
         if (emailExists)
             return this._sendException(400, 'Validation Error', ['Email already exists']);
         let phoneExists = await this._service.verifyUser({ mobile_no: this._body['mobile_no'] });
