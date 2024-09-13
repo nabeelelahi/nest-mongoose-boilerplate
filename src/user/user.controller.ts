@@ -7,11 +7,13 @@ import {
     Body,
     Param,
     UseInterceptors,
+    Next,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
     Request,
     Response,
+    NextFunction
 } from 'express';
 import { UserService } from './user.service';
 import { BaseController } from 'src/base/base.controller';
@@ -40,9 +42,11 @@ export class UserController extends BaseController {
         @Req() _request: Request,
         @Res() _response: Response,
         @Body() _body: UserDTO,
+        @Next() _next: NextFunction
     ) {
         this._request = _request;
         this._response = _response;
+        this._next = _next;
         this._body = _body;
         return await this.create();
     }
@@ -55,9 +59,11 @@ export class UserController extends BaseController {
         @Res() _response: Response,
         @Body() _body: UpdateUserDTO,
         @Param('id') _id: string,
+        @Next() _next: NextFunction
     ) {
         this._request = _request;
         this._response = _response;
+        this._next = _next;
         this._body = _body;
         return await this.update(_id);
     }
@@ -86,9 +92,11 @@ export class UserController extends BaseController {
         @Req() _request: Request,
         @Res() _response: Response,
         @Body() _body: LoginDTO,
+        @Next() _next: NextFunction
     ): Promise<any> {
         this._request = _request;
         this._response = _response;
+        this._next = _next;
         let user = await this._service.verifyCredentails(_body);
         if (!user)
             return this._sendException(400, 'Validation Error', ['Invalid Credentials']);
@@ -96,7 +104,7 @@ export class UserController extends BaseController {
         if (!success)
             return this._sendException(401, 'Validation Error', [message]);
         let access_token = await this._service.generateToken(user);
-        user = await this._service.findOne({ mobile_no: user['mobile_no'] }, this._service._fillables());
+        user = await this._service.findOne({ [verificationConstant.mode]: user[verificationConstant.mode] }, this._service._fillables());
         console.log('user....', user)
         this._is_paginate = false;
         return await this._sendResponse(200, 'Login Successful', user, { access_token });
@@ -108,9 +116,11 @@ export class UserController extends BaseController {
         @Req() _request: Request,
         @Res() _response: Response,
         @Body() _body: VerifyCodeDTO,
+        @Next() _next: NextFunction
     ) {
         this._request = _request;
         this._response = _response;
+        this._next = _next;
         let verified = await this._service.verifyCode(_body);
         if (verified && typeof verified === 'string') return this._sendResponse(200, 'Verification Successful', {}, { reset_password_token: verified });
         else return this._sendException(400, 'Validation Error', ['Invalid Code']);
@@ -122,9 +132,11 @@ export class UserController extends BaseController {
         @Req() _request: Request,
         @Res() _response: Response,
         @Body() _body: ForgotDTO,
+        @Next() _next: NextFunction
     ) {
         this._request = _request;
         this._response = _response;
+        this._next = _next;
         await this._service.resetVerificationCode(_body)
         return this._sendResponse(200, 'Code Sent Successfully', {});
     }
@@ -135,9 +147,11 @@ export class UserController extends BaseController {
         @Req() _request: Request,
         @Res() _response: Response,
         @Body() _body: SetPaswordDTO,
+        @Next() _next: NextFunction
     ) {
         this._request = _request;
         this._response = _response;
+        this._next = _next;
         let success = await this._service.setPassword(_request, _body);
         if (success)
             return this._sendResponse(200, 'Reset Password Successfully', {});
@@ -151,9 +165,11 @@ export class UserController extends BaseController {
         @Req() _request: Request,
         @Res() _response: Response,
         @Body() _body: ChangePaswordDTO,
+        @Next() _next: NextFunction
     ) {
         this._request = _request;
         this._response = _response;
+        this._next = _next;
         let { success, message } = await this._service.changePassword(_request, _body);
         if (success)
             return this._sendResponse(200, message, {});

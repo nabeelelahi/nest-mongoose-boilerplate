@@ -72,7 +72,7 @@ export class UserService extends BaseService {
 
 
     async verifyCredentails(_body: LoginDTO): Promise<any> {
-        let user = await this.findOne({ mobile_no: _body['mobile_no'].toLocaleLowerCase(), deleted_at: null });
+        let user = await this.findOne({ [verificationConstant.mode]: _body[verificationConstant.mode].toLocaleLowerCase(), deleted_at: null });
         if (!user) return false;
         let verifyPassword = bcrypt.compareSync(_body['password'], user['password']);
         if (!verifyPassword) return false;

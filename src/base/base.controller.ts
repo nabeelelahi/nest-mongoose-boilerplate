@@ -5,14 +5,17 @@ import {
     Res,
     Param,
     Query,
+    Next,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import {
     Request,
     Response,
+    NextFunction
 } from 'express';
 import mongoose from 'mongoose';
 import * as _ from 'radash';
+import { RestController } from './rest.controller';
 
 interface PaginatedDataDTO {
     count: number
@@ -23,10 +26,8 @@ interface PaginatedDataDTO {
 }
 
 @ApiBearerAuth('Authorization')
-export class BaseController {
+export class BaseController extends RestController {
     protected _service: any;
-    protected _request: Request;
-    protected _response: Response;
     protected _body: any;
     protected beforeIndex: Function;
     protected afterIndex: Function;
@@ -38,10 +39,9 @@ export class BaseController {
     protected afterUpdate: Function;
     protected beforeDelete: Function;
     protected afterDelete: Function;
-    protected _is_error: boolean;
-    protected _is_paginate: boolean;
 
     constructor() {
+        super()
     }
 
     @Get()
@@ -56,10 +56,12 @@ export class BaseController {
     async get(
         @Req() _request: Request,
         @Res() _response: Response,
+        @Next() _next: NextFunction,
         @Query() _query: object
     ) {
         this._request = _request;
         this._response = _response;
+        this._next = _next;
         // before list
         _.isFunction(this.beforeIndex) && await this.beforeIndex();
         let records = await this._service.get(_request as Request, _query as Object);
@@ -80,10 +82,12 @@ export class BaseController {
     async getById(
         @Req() _request: Request,
         @Res() _response: Response,
+        @Next() _next: NextFunction,
         @Param('id') id: string
     ) {
         this._request = _request;
         this._response = _response;
+        this._next = _next;
         // before list
         _.isFunction(this.beforeShow) && await this.beforeShow(id);
         let records = await this._service.getById(_request as Request, id);
@@ -157,11 +161,13 @@ export class BaseController {
     async remove(
         @Req() _request: Request,
         @Res() _response: Response,
-        @Param('id') id: string
+        @Param('id') id: string,
+        @Next() _next: NextFunction,
     ) {
         try {
             this._request = _request;
             this._response = _response;
+            this._next = _next;
             // before delete
             _.isFunction(this.beforeDelete) && await this.beforeDelete(id as string)
             let record = await this._service.delete(this._request as Request, id as string)
@@ -178,44 +184,5 @@ export class BaseController {
         }
     }
 
-    /**
-     * Sends a response with the specified status code, message, and data.
-     * If the `_is_paginate` property is true, the response will include pagination links.
-     *
-     * @param {number} statusCode - The HTTP status code of the response. Default is 200.
-     * @param {string} message - The message to include in the response. Default is 'Success'.
-     * @param {object} data - The data to include in the response.
-     * @return {Promise<void>} A promise that resolves to the response object.
-     */
-    async _sendResponse(
-        statusCode: number = 200,
-        message: string = 'Success',
-        data: object,
-        headers: object = {}
-    ): Promise<void> {
-        if (headers) {
-            Object.entries(headers).forEach(([key, value]) => {
-                this._response.setHeader(key, value)
-            })
-        }
-        if (this._is_paginate) {
-            let { records, ...pagination } = data as PaginatedDataDTO;
-            if (pagination) this._response.setHeader('pagination', JSON.stringify(pagination))
-            this._response.status(statusCode).send({
-                statusCode, message, data: records
-            })
-        }
-        else {
-            this._response.status(statusCode).send({ statusCode, message, data })
-        }
-    }
-
-    async _sendException(
-        statusCode: number = 200,
-        error: string = 'Error',
-        message: object,
-    ) {
-        return this._response.status(statusCode).send({ statusCode, message, error })
-    }
 
 }
